@@ -20,8 +20,6 @@ All features have been implemented with consistent design patterns, proper valid
 - Updated time display layout to show timezone below current time
 - Integrated with existing clock functionality
 
-**Screenshot**
-
 ## Enhanced Form Validation for User Creation
 
 **Feature**: Replaced alert-based validation with inline form validation messages.
@@ -32,8 +30,6 @@ All features have been implemented with consistent design patterns, proper valid
 - Updated `Edit.jsx` (renamed to `EditUser.jsx`) with same validation approach
 - Added real-time validation with error messages under each field
 - Validates required fields: First Name, Last Name, Username, Password, and Phone
-
-**Screenshot**: The "Add New Employee" modal shows red validation messages under empty required fields instead of using alert popups.
 
 ## Client Management Features
 
@@ -46,8 +42,6 @@ All features have been implemented with consistent design patterns, proper valid
 - Integrated with existing user management system for consistency
 - Added modal dialog for adding new clients with form validation
 
-**Screenshot**: The Clients page shows a clean interface with search functionality and a prominent "Add Client" button.
-
 ### Client Edit Feature
 
 **Feature**: Added edit functionality for existing clients.
@@ -57,8 +51,6 @@ All features have been implemented with consistent design patterns, proper valid
 - Modified existing `EditUser.jsx` component to work for both employees and clients
 - Pre-populated form fields with existing client data
 - Username field is read-only in edit mode for security
-
-**Screenshot**: The "Edit Client" modal shows pre-filled client information with the same validation system as the create form.
 
 ## 🔧 Technical Improvements
 
@@ -104,4 +96,26 @@ All features have been implemented with consistent design patterns, proper valid
 
 ## 📸 Demo Screenshots
 
-*Screenshots will be added here to showcase the implemented features in action.*
+### Timezone Display
+![Timezone Display](assets/timezone.png)
+*Top bar showing current time with timezone information*
+
+### Form Validation
+![Add Employee Validation](assets/add-employee.png)
+*"Add New Employee" modal showing red validation messages under empty required fields instead of using alert popups*
+
+### Edit Employee Modal
+![Edit Employee Modal](assets/edit-employee.png)
+*"Edit Employee" modal showing pre-filled employee information*
+
+### Client Management Interface
+![Client Page with Add Button](assets/client-page-with-add.png)
+*Clients page showing a clean interface with search functionality and a prominent "Add Client" button*
+
+### Add Client Modal
+![Add Client Modal](assets/add-client.png)
+*"Add New Client" modal with form validation for creating new clients*
+
+### Edit Client Modal
+![Edit Client Modal](assets/edit-client.png)
+*"Edit Client" modal showing pre-filled client information with the same validation system as the create form*
