@@ -76,23 +76,33 @@ const StyledMenuItem = styled(MenuItem)(
     &:last-of-type {
       border-bottom: none;
     }
-    
+
     &.${menuItemClasses.focusVisible} {
       outline: 3px solid ${theme.palette.mode === "dark" ? blue[600] : blue[200]};
       background-color: ${theme.palette.mode === "dark" ? grey[800] : grey[100]};
       color: ${theme.palette.mode === "dark" ? grey[300] : grey[900]};
     }
-  
+
     &.${menuItemClasses.disabled} {
       color: ${theme.palette.mode === "dark" ? grey[700] : grey[400]};
     }
-  
+
     &:hover:not(.${menuItemClasses.disabled}) {
       background-color: ${theme.palette.mode === "dark" ? grey[800] : grey[100]};
       color: ${theme.palette.mode === "dark" ? grey[300] : grey[900]};
     }
     `
 );
+
+const getTimezoneName = (date) => {
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const parts = new Intl.DateTimeFormat(undefined, { // undefined means use the default locale
+    timeZone: timeZone,
+    timeZoneName: 'longGeneric'
+  }).formatToParts(date);
+
+  return parts.find(part => part.type === 'timeZoneName')?.value || timeZone;
+};
 
 const Navbar = ({ setShowSidebar, showSidebar, open, setOpen }) => {
   /////////////////////////////////////////// VARIABLES ////////////////////////////////////////////
@@ -143,10 +153,14 @@ const Navbar = ({ setShowSidebar, showSidebar, open, setOpen }) => {
               )}`}>
               <PiList className="text-[25px]" />
             </IconButton>
-            <div>
-              <p className="text-sky-400 text-xl gap-1 flex items-center">
-                <PiTimerLight className="text-[25px]" /> {date.toLocaleTimeString()}
-              </p>
+            <div className="text-sky-400 text-lg gap-1 flex items-center">
+              <PiTimerLight className="text-[25px] flex-shrink-0" />
+              <div className="flex flex-col items-start">
+                <span className="leading-[120%] mt-3">{date.toLocaleTimeString()}</span>
+                <div className="text-sky-300 text-[10px] leading-none">
+                  {getTimezoneName(date)}
+                </div>
+              </div>
             </div>
           </div>
 
