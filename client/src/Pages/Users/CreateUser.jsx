@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createEmployee } from "../../redux/action/user";
-import { useNavigate } from "react-router-dom";
-import Topbar from "./Topbar";
+import { createEmployee, createClient } from "../../redux/action/user";
+import { useLocation } from "react-router-dom";
 import {
   Divider,
   Dialog,
@@ -11,13 +10,9 @@ import {
   Slide,
   DialogActions,
   TextField,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
 } from "@mui/material";
 import { PiNotepad, PiXLight } from "react-icons/pi";
-import { CFormSelect } from "@coreui/react";
-import { pakistanCities } from "../../constant";
+import { useUserFormValidation } from "../../hooks";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -25,9 +20,14 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const CreateUser = ({ open, setOpen, scroll }) => {
   //////////////////////////////////////// VARIABLES /////////////////////////////////////
+  const { pathname } = useLocation();
+  const isEmployee = pathname.includes("employees");
+  const userType = isEmployee ? "Employee" : "Client";
+  const dispatchAction = isEmployee ? createEmployee : createClient;
+
   const { isFetching } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const initialEmployeeState = {
+  const initialUserState = {
     firstName: "",
     lastName: "",
     username: "",
@@ -36,28 +36,30 @@ const CreateUser = ({ open, setOpen, scroll }) => {
     email: "",
   }
 
-  //////////////////////////////////////// STATES /////////////////////////////////////
-  const [employeeData, setEmployeeData] = useState(initialEmployeeState);
-
-  //////////////////////////////////////// USE EFFECTS /////////////////////////////////////
+  // Form validation hook
+  const {
+    values: userData,
+    errors,
+    handleChange,
+    validateForm,
+    resetForm
+  } = useUserFormValidation(initialUserState, { includePassword: true });
 
   //////////////////////////////////////// FUNCTIONS /////////////////////////////////////
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { firstName, lastName, username, password, phone, email } = employeeData
-    if (!firstName || !lastName || !username || !password || !phone  )
-      return alert("Make sure to provide all the fields")
-    dispatch(createEmployee(employeeData, setOpen));
-    setEmployeeData(initialEmployeeState)
-  };
 
-  const handleChange = (field, value) => {
-    setEmployeeData((prevFilters) => ({ ...prevFilters, [field]: value, }));
+    if (!validateForm()) {
+      return;
+    }
+
+    dispatch(dispatchAction(userData, setOpen));
+    resetForm();
   };
 
   const handleClose = () => {
     setOpen(false);
-    setEmployeeData(initialEmployeeState)
+    resetForm();
   };
 
   return (
@@ -72,7 +74,7 @@ const CreateUser = ({ open, setOpen, scroll }) => {
         maxWidth="sm"
         aria-describedby="alert-dialog-slide-description">
         <DialogTitle className="flex items-center justify-between">
-          <div className="text-sky-400 font-primary">Add New Employee</div>
+          <div className="text-sky-400 font-primary">Add New {userType}</div>
           <div className="cursor-pointer" onClick={handleClose}>
             <PiXLight className="text-[25px]" />
           </div>
@@ -81,7 +83,7 @@ const CreateUser = ({ open, setOpen, scroll }) => {
           <div className="flex flex-col gap-2 p-3 text-gray-500 font-primary">
             <div className="text-xl flex justify-start items-center gap-2 font-normal">
               <PiNotepad size={23} />
-              <span>Employee Detials</span>
+              <span>{userType} Detials</span>
             </div>
             <Divider />
             <table className="mt-4">
@@ -91,8 +93,10 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                   <TextField
                     size="small"
                     fullWidth
-                    value={employeeData.firstName}
+                    value={userData.firstName}
                     onChange={(e) => handleChange('firstName', e.target.value)}
+                    error={!!errors.firstName}
+                    helperText={errors.firstName}
                   />
                 </td>
               </tr>
@@ -102,8 +106,10 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                   <TextField
                     size="small"
                     fullWidth
-                    value={employeeData.lastName}
+                    value={userData.lastName}
                     onChange={(e) => handleChange('lastName', e.target.value)}
+                    error={!!errors.lastName}
+                    helperText={errors.lastName}
                   />
                 </td>
               </tr>
@@ -113,8 +119,10 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                   <TextField
                     size="small"
                     fullWidth
-                    value={employeeData.username}
+                    value={userData.username}
                     onChange={(e) => handleChange('username', e.target.value)}
+                    error={!!errors.username}
+                    helperText={errors.username}
                   />
                 </td>
               </tr>
@@ -125,8 +133,10 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                     size="small"
                     fullWidth
                     placeholder="Optional"
-                    value={employeeData.email}
+                    value={userData.email}
                     onChange={(e) => handleChange('email', e.target.value)}
+                    error={!!errors.email}
+                    helperText={errors.email}
                   />
                 </td>
               </tr>
@@ -135,10 +145,12 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                 <td className="pb-4">
                   <TextField
                     type="password"
-                    value={employeeData.password}
+                    value={userData.password}
                     onChange={(e) => handleChange("password", e.target.value)}
                     size="small"
                     fullWidth
+                    error={!!errors.password}
+                    helperText={errors.password}
                   />
                 </td>
               </tr>
@@ -148,9 +160,11 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                   <TextField
                     type="number"
                     size="small"
-                    value={employeeData.phone}
+                    value={userData.phone}
                     onChange={(e) => handleChange("phone", e.target.value)}
                     fullWidth
+                    error={!!errors.phone}
+                    helperText={errors.phone}
                   />
                 </td>
               </tr>

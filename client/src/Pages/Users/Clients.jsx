@@ -2,17 +2,16 @@ import React, { useEffect, useState } from "react";
 import Topbar from "./Topbar";
 import { Table } from "../../Components";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import { getClients, getEmployeeClients } from "../../redux/action/user";
-import { getClientsReducer, getUserReducer } from "../../redux/reducer/user";
+import { getUserReducer } from "../../redux/reducer/user";
 import { Tooltip, styled } from "@mui/material";
-import { PiDotsThreeOutlineThin, PiTrashLight } from "react-icons/pi";
-import { IoOpenOutline } from "react-icons/io5";
+import { PiTrashLight } from "react-icons/pi";
 import { CiEdit } from "react-icons/ci";
-import { Dropdown, Menu, MenuButton, MenuItem, menuItemClasses } from "@mui/base";
+import { MenuItem, menuItemClasses } from "@mui/base";
 import Filter from "./Filter";
 import User from "./User";
-import DeleteClient from "./Delete";
+import DeleteUser from "./DeleteUser";
+import EditUser from "./EditUser";
 
 const blue = {
   100: "#DAECFF",
@@ -139,16 +138,20 @@ const Clients = () => {
       headerClassName: "super-app-theme--header",
       renderCell: (params) => (
         <div className="flex gap-[10px]">
-          {
-            loggedUser?.role != 'employee' &&
-            <Tooltip placement="top" title="Delete" arrow>
-              {" "}
-              <PiTrashLight
-                onClick={() => handleOpenDeleteModal(params.row._id)}
-                className="cursor-pointer text-red-500 text-[23px] hover:text-red-400"
-              />
-            </Tooltip>
-          }
+          <Tooltip placement="top" title="Delete" arrow>
+            {" "}
+            <PiTrashLight
+              onClick={() => handleOpenDeleteModal(params.row._id)}
+              className="cursor-pointer text-red-500 text-[23px] hover:text-red-400"
+            />
+          </Tooltip>
+          <Tooltip placement="top" title="Edit" arrow>
+            {" "}
+            <CiEdit
+              onClick={() => handleOpenEditModal(params.row)}
+              className="cursor-pointer text-green-500 text-[23px] hover:text-green-600"
+            />
+          </Tooltip>
         </div>
       ),
     },
@@ -171,11 +174,8 @@ const Clients = () => {
   }, []);
 
   ////////////////////////////////////// FUNCTIONS //////////////////////////////////////////
-  const handleClickOpen = () => {
-    setOpenUser(true);
-  };
-  const handleOpenEditModal = (employee) => {
-    dispatch(getUserReducer(employee));
+  const handleOpenEditModal = (user) => {
+    dispatch(getUserReducer(user));
     setOpenEditModal(true);
   };
   const handleOpenDeleteModal = (userId) => {
@@ -185,8 +185,8 @@ const Clients = () => {
 
   return (
     <div className="w-full">
-
-      <DeleteClient open={openDeleteModal} setOpen={setOpenDeleteModal} userId={selectedUserId} />
+      <EditUser open={openEditModal} setOpen={setOpenEditModal} />
+      <DeleteUser open={openDeleteModal} setOpen={setOpenDeleteModal} userId={selectedUserId} />
       <Filter open={openFilters} setOpen={setOpenFilters} />
       <User open={openUser} setOpen={setOpenUser} />
 

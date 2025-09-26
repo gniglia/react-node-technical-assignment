@@ -2,17 +2,13 @@ import React, { memo, useEffect, useState } from "react";
 import Topbar from "./Topbar";
 import { Table } from "../../Components";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import { getEmployees } from "../../redux/action/user";
-import DeleteEmployee from "./Delete";
-import EditEmployee from "./Edit";
+import DeleteUser from "./DeleteUser";
+import EditUser from "./EditUser";
 import { getEmployeesReducer, getUserReducer } from "../../redux/reducer/user";
-import { IconButton, Tooltip } from "@mui/material";
-import { DeleteOutline, EditOutlined } from "@mui/icons-material";
+import { Tooltip } from "@mui/material";
 import { PiTrashLight } from "react-icons/pi";
-import { IoOpenOutline } from "react-icons/io5";
 import { CiEdit } from "react-icons/ci";
-import Filter from "./Filter";
 import User from "./User";
 
 const Employees = memo(() => {
@@ -117,12 +113,8 @@ const Employees = memo(() => {
   }, [isFiltered]);
 
   /////////////////////////////////////// FUNCTIONS /////////////////////////////////////
-  const hanldeOpenViewModal = (taskId) => {
-    setSelectedUserId(taskId);
-    setOpenViewk(true);
-  };
-  const handleOpenEditModal = (employee) => {
-    dispatch(getUserReducer(employee));
+  const handleOpenEditModal = (user) => {
+    dispatch(getUserReducer(user));
     setOpenEditModal(true);
   };
   const handleOpenDeleteModal = (taskId) => {
@@ -132,8 +124,8 @@ const Employees = memo(() => {
 
   return (
     <div className="w-full">
-      <EditEmployee open={openEditModal} setOpen={setOpenEditModal} />
-      <DeleteEmployee open={openDeleteModal} setOpen={setOpenDeleteModal} userId={selectedUserId} />
+      <EditUser open={openEditModal} setOpen={setOpenEditModal} />
+      <DeleteUser open={openDeleteModal} setOpen={setOpenDeleteModal} userId={selectedUserId} />
       <User open={openView} setOpen={setOpenViewk} />
 
       <Topbar

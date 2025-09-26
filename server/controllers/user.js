@@ -107,37 +107,49 @@ export const getEmployees = async (req, res, next) => {
 
 export const createClient = async (req, res, next) => {
     try {
+        const findedUser = await User.findOne({ username: req.body.username });
+        if (Boolean(findedUser)) return next(createError(400, "Username already exist"));
 
-        const findedUser = await User.findOne({ email: req.body.email })
-        if (Boolean(findedUser)) return next(createError(400, 'Email already exist'))
+        const { password } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 12);
 
-        const result = await User.create({ ...req.body, role: 'client' })
-        res.status(200).json({ result, message: 'client created seccessfully', success: true })
-
+        const result = await User.create({
+            ...req.body,
+            password: hashedPassword,
+            role: "client",
+        });
+        res
+            .status(200)
+            .json({ result, message: "client created seccessfully", success: true });
     } catch (err) {
-        next(createError(500, err.message))
+        next(createError(500, err.message));
     }
-}
+};
 export const createEmployee = async (req, res, next) => {
     try {
+        const findedUser = await User.findOne({ username: req.body.username });
+        if (Boolean(findedUser)) return next(createError(400, "Username already exist"));
 
-        const findedUser = await User.findOne({ username: req.body.username })
-        if (Boolean(findedUser)) return next(createError(400, 'Username already exist'))
+        const { password } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 12);
 
-        const { password } = req.body
-        const hashedPassword = await bcrypt.hash(password, 12)
-
-        const result = await User.create({ ...req.body, password: hashedPassword, role: 'employee' })
-        res.status(200).json({ result, message: 'employee created seccessfully', success: true })
-
+        const result = await User.create({
+            ...req.body,
+            password: hashedPassword,
+            role: "employee",
+        });
+        res.status(200).json({
+            result,
+            message: "employee created seccessfully",
+            success: true,
+        });
     } catch (err) {
-        next(createError(500, err.message))
+        next(createError(500, err.message));
     }
-}
+};
 
 export const updateRole = async (req, res, next) => {
     try {
-
         const { userId } = req.params
         const { role } = req.body
 
@@ -159,7 +171,7 @@ export const updateUser = async (req, res, next) => {
         const findedUser = await User.findById(userId)
         if (!findedUser) return next(createError(400, 'User not exist'))
 
-        const { _id, ...body } = req.body
+        const { _id, username, ...body } = req.body
         const updatedUser = await User.findByIdAndUpdate(userId, { $set: body }, { new: true })
         res.status(200).json({ result: updatedUser, message: 'User updated successfully', success: true })
 

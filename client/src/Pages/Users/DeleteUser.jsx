@@ -1,9 +1,9 @@
-import { Modal, Dialog, DialogTitle, DialogContent, DialogActions, Button, DialogContentText } from '@mui/material'
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, DialogContentText } from '@mui/material'
 import React from 'react'
 import { deleteUser } from '../../redux/action/user'
 import { useDispatch, useSelector } from 'react-redux'
 
-const DeleteModal = ({ open, setOpen, userId }) => {
+const DeleteUser = ({ open, setOpen, userId }) => {
 
   ////////////////////////////////////// VARIABLES ///////////////////////////////////////
   const { isFetching, error } = useSelector(state => state.user)
@@ -41,4 +41,4 @@ const DeleteModal = ({ open, setOpen, userId }) => {
   )
 }
 
-export default DeleteModal
+export default DeleteUser;

@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Add, Close } from "@mui/icons-material";
 import { Path } from "../../utils";
 import { Chip, FormControl, Input, InputAdornment, Tooltip } from "@mui/material";
 import { PiMagnifyingGlass } from "react-icons/pi";
 import { FiFilter } from "react-icons/fi";
-import CreateUser from "./CreateEmployee";
+import CreateUser from "./CreateUser";
 import Filter from "./Filter";
 import { searchUserReducer } from "../../redux/reducer/user";
 
@@ -119,6 +119,15 @@ const Topbar = ({ view, setView, setIsFiltered, isFiltered }) => {
                   }
                 />
               </FormControl>
+            </div>
+            <div>
+              <Tooltip title="Add New Employee" placement="top" arrow>
+                <div onClick={handleCreateopen("body")}>
+                  <button className="bg-primary-red hover:bg-red-400 transition-all text-white w-[44px] h-[44px] flex justify-center items-center rounded-full shadow-xl">
+                    <Add />
+                  </button>
+                </div>
+              </Tooltip>
             </div>
           </div>
         )}

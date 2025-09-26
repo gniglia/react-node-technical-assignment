@@ -1,32 +1,29 @@
-import { Close } from "@mui/icons-material";
-import { Autocomplete, IconButton, MenuItem, Modal, Select, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import { TextField } from "@mui/material";
+import { useEffect } from "react";
 import React from "react";
 import { updateUser } from "../../redux/action/user";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import {
-  PiHandCoins,
-  PiHouseLine,
-  PiImage,
-  PiImages,
-  PiMapPinLine,
   PiNotepad,
-  PiRuler,
   PiXLight,
 } from "react-icons/pi";
 import { Divider, Dialog, DialogContent, DialogTitle, Slide, DialogActions } from "@mui/material";
-import { pakistanCities } from "../../constant";
-import { CFormSelect } from "@coreui/react";
+import { useUserFormValidation } from "../../hooks";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
 });
 
-const EditModal = ({ open, setOpen }) => {
+const EditUser = ({ open, setOpen }) => {
   /////////////////////////////////////// VARIABLES ///////////////////////////////////////
+  const { pathname } = useLocation();
+  const isEmployee = pathname.includes("employees");
+  const userType = isEmployee ? "Employee" : "Client";
+
   const dispatch = useDispatch();
   const { currentEmployee, isFetching, error } = useSelector((state) => state.user);
-  const initialEmployeeState = {
+  const initialUserState = {
     firstName: "",
     lastName: "",
     username: "",
@@ -35,26 +32,44 @@ const EditModal = ({ open, setOpen }) => {
   };
 
   /////////////////////////////////////// STATES ///////////////////////////////////////
-  const [employeeData, setEmployeeData] = useState(currentEmployee);
+  // Form validation hook
+  const {
+    values: userData,
+    errors,
+    handleChange,
+    validateForm,
+    resetForm,
+    setFieldValue
+  } = useUserFormValidation(currentEmployee || initialUserState, { includePassword: false });
+
   /////////////////////////////////////// USE EFFECT ///////////////////////////////////////
   useEffect(() => {
-    setEmployeeData(currentEmployee);
-  }, [currentEmployee]);
+    // Update form values when currentEmployee changes
+    if (currentEmployee) {
+      Object.entries(currentEmployee).forEach(([key, value]) => {
+        setFieldValue(key, value);
+      });
+    }
+  }, [currentEmployee, setFieldValue]);
 
   /////////////////////////////////////// FUNCTIONS ///////////////////////////////////////
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(updateUser(currentEmployee._id, employeeData, employeeData?.role));
-    setEmployeeData(initialEmployeeState);
-    setOpen(false);
-  };
 
-  const handleInputChange = (field, value) => {
-    setEmployeeData((prevFilters) => ({ ...prevFilters, [field]: value }));
+    if (!validateForm()) {
+      return;
+    }
+
+    // Exclude password from update payload for security
+    const { password, ...updateData } = userData;
+    dispatch(updateUser(currentEmployee._id, updateData, userData?.role));
+    resetForm();
+    setOpen(false);
   };
 
   const handleClose = () => {
     setOpen(false);
+    resetForm();
   };
 
   return (
@@ -68,7 +83,7 @@ const EditModal = ({ open, setOpen }) => {
       maxWidth="sm"
       aria-describedby="alert-dialog-slide-description">
       <DialogTitle className="flex items-center justify-between">
-        <div className="text-sky-400 font-primary">Edit Employee</div>
+        <div className="text-sky-400 font-primary">Edit {userType}</div>
         <div className="cursor-pointer" onClick={handleClose}>
           <PiXLight className="text-[25px]" />
         </div>
@@ -77,7 +92,7 @@ const EditModal = ({ open, setOpen }) => {
         <div className="flex flex-col gap-2 p-3 text-gray-500 font-primary">
           <div className="text-xl flex justify-start items-center gap-2 font-normal">
             <PiNotepad size={23} />
-            <span>Employee Detials</span>
+            <span>{userType} Detials</span>
           </div>
           <Divider />
           <table className="mt-4">
@@ -87,8 +102,10 @@ const EditModal = ({ open, setOpen }) => {
                 <TextField
                   size="small"
                   fullWidth
-                  value={employeeData?.firstName}
-                  onChange={(e) => handleInputChange("firstName", e.target.value)}
+                  value={userData?.firstName}
+                  onChange={(e) => handleChange("firstName", e.target.value)}
+                  error={!!errors.firstName}
+                  helperText={errors.firstName}
                 />
               </td>
             </tr>
@@ -98,8 +115,10 @@ const EditModal = ({ open, setOpen }) => {
                 <TextField
                   size="small"
                   fullWidth
-                  value={employeeData?.lastName}
-                  onChange={(e) => handleInputChange("lastName", e.target.value)}
+                  value={userData?.lastName}
+                  onChange={(e) => handleChange("lastName", e.target.value)}
+                  error={!!errors.lastName}
+                  helperText={errors.lastName}
                 />
               </td>
             </tr>
@@ -110,20 +129,17 @@ const EditModal = ({ open, setOpen }) => {
                     size="small"
                     fullWidth
                     placeholder="Optional"
-                    value={employeeData?.email}
+                    value={userData?.email}
                     onChange={(e) => handleChange('email', e.target.value)}
+                    error={!!errors.email}
+                    helperText={errors.email}
                   />
                 </td>
               </tr>
             <tr>
               <td className="pb-4 text-lg">User Name </td>
               <td className="pb-4">
-                <TextField
-                  size="small"
-                  fullWidth
-                  value={employeeData?.username}
-                  onChange={(e) => handleInputChange("username", e.target.value)}
-                />
+                {userData?.username}
               </td>
             </tr>
             <tr>
@@ -132,9 +148,11 @@ const EditModal = ({ open, setOpen }) => {
                 <TextField
                   type="number"
                   size="small"
-                  value={employeeData?.phone}
-                  onChange={(e) => handleInputChange("phone", e.target.value)}
+                  value={userData?.phone}
+                  onChange={(e) => handleChange("phone", e.target.value)}
                   fullWidth
+                  error={!!errors.phone}
+                  helperText={errors.phone}
                 />
               </td>
             </tr>
@@ -160,4 +178,4 @@ const EditModal = ({ open, setOpen }) => {
   );
 };
 
-export default EditModal;
+export default EditUser;
